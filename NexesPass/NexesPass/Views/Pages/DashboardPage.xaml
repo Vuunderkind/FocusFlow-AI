@@ -1,0 +1,164 @@
+<Page x:Class="NexesPass.Views.Pages.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="Transparent">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,16,24,24">
+        <StackPanel>
+
+            <!-- Greeting + Balance -->
+            <Grid Margin="0,0,0,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock x:Name="GreetingText" FontSize="14"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               FontFamily="Segoe UI"/>
+                    <TextBlock x:Name="UserNameLabel" FontSize="24" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontFamily="Segoe UI"/>
+                </StackPanel>
+
+                <Border Grid.Column="1" Background="{StaticResource CardBrush}"
+                        CornerRadius="12" Padding="20,16">
+                    <StackPanel HorizontalAlignment="Right">
+                        <TextBlock Text="Общий баланс" FontSize="12"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontFamily="Segoe UI" HorizontalAlignment="Right"/>
+                        <TextBlock x:Name="TotalBalanceText" FontSize="28" FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontFamily="Segoe UI" HorizontalAlignment="Right"/>
+                        <TextBlock Text="в рублях" FontSize="11"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   FontFamily="Segoe UI" HorizontalAlignment="Right"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Quick Actions -->
+            <TextBlock Text="Быстрые действия" Style="{StaticResource SectionTitle}" Margin="0,0,0,16"/>
+            <UniformGrid Columns="4" Margin="0,0,0,28">
+                <Button Style="{StaticResource GhostButton}" Margin="0,0,8,0"
+                        Click="QuickTransfer" Padding="16,14">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Border Width="44" Height="44" CornerRadius="12" HorizontalAlignment="Center">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#6C63FF" Offset="0"/>
+                                    <GradientStop Color="#4ECDC4" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <TextBlock Text="↔" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Перевод" FontSize="12" HorizontalAlignment="Center"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontFamily="Segoe UI" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource GhostButton}" Margin="4,0,4,0"
+                        Click="QuickTopUp" Padding="16,14">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Border Width="44" Height="44" CornerRadius="12" HorizontalAlignment="Center"
+                                Background="#1A2D1A">
+                            <TextBlock Text="+" FontSize="24" FontWeight="Bold"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Foreground="{StaticResource SuccessBrush}"/>
+                        </Border>
+                        <TextBlock Text="Пополнить" FontSize="12" HorizontalAlignment="Center"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontFamily="Segoe UI" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource GhostButton}" Margin="4,0,4,0"
+                        Click="QuickCards" Padding="16,14">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Border Width="44" Height="44" CornerRadius="12" HorizontalAlignment="Center"
+                                Background="#1A1A2D">
+                            <TextBlock Text="💳" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Карты" FontSize="12" HorizontalAlignment="Center"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontFamily="Segoe UI" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource GhostButton}" Margin="8,0,0,0"
+                        Click="QuickLoans" Padding="16,14">
+                    <StackPanel HorizontalAlignment="Center">
+                        <Border Width="44" Height="44" CornerRadius="12" HorizontalAlignment="Center"
+                                Background="#2D1A1A">
+                            <TextBlock Text="📋" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Кредит" FontSize="12" HorizontalAlignment="Center"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontFamily="Segoe UI" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Button>
+            </UniformGrid>
+
+            <!-- Accounts Row -->
+            <TextBlock Text="Мои счета" Style="{StaticResource SectionTitle}" Margin="0,0,0,16"/>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                          Margin="0,0,0,28">
+                <StackPanel x:Name="AccountsPanel" Orientation="Horizontal"/>
+            </ScrollViewer>
+
+            <!-- Recent transactions -->
+            <TextBlock Text="Последние операции" Style="{StaticResource SectionTitle}" Margin="0,0,0,16"/>
+            <Border Background="{StaticResource CardBrush}" CornerRadius="16" Padding="4">
+                <ItemsControl x:Name="TxList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="16,12" CornerRadius="10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="44"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="40" Height="40" CornerRadius="12"
+                                            Background="{StaticResource InputBrush}">
+                                        <TextBlock Text="{Binding Type, Converter={StaticResource TxTypeIcon}}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   FontSize="16"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Description}" FontSize="14"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontFamily="Segoe UI" FontWeight="Medium"/>
+                                        <TextBlock Text="{Binding CreatedAt, StringFormat=dd.MM.yyyy HH:mm}"
+                                                   FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontFamily="Segoe UI"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <TextBlock x:Name="AmountText" FontSize="15" FontWeight="Bold"
+                                                   FontFamily="Segoe UI" HorizontalAlignment="Right"/>
+                                        <TextBlock Text="{Binding Status, Converter={StaticResource TxStatusConv}}"
+                                                   FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                                   FontFamily="Segoe UI" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+
+            <!-- Empty transactions hint -->
+            <Border x:Name="EmptyTxHint" Background="{StaticResource CardBrush}" CornerRadius="16"
+                    Padding="32" Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="🏦" FontSize="48" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Транзакций пока нет" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="0,12,0,4"/>
+                    <TextBlock Text="Пополните счёт и начните пользоваться банком"
+                               FontSize="13" Foreground="{StaticResource TextMutedBrush}"
+                               FontFamily="Segoe UI" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

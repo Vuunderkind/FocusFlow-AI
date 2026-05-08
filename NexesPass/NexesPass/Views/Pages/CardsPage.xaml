@@ -1,0 +1,277 @@
+<Page x:Class="NexesPass.Views.Pages.CardsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="Transparent">
+
+    <Grid Margin="24,16,24,24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="320"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: Cards list -->
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                <TextBlock Text="Мои карты" Style="{StaticResource SectionTitle}"/>
+                <Button Content="+ Выпустить карту" Style="{StaticResource PrimaryButton}"
+                        Padding="14,8" FontSize="12" Margin="Auto,0,0,0"
+                        Click="ShowIssueForm"/>
+            </StackPanel>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="CardsList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,0,12" CornerRadius="16" Cursor="Hand"
+                                    MouseLeftButtonDown="SelectCard">
+                                <Border.Background>
+                                    <SolidColorBrush Color="#1A1A26"/>
+                                </Border.Background>
+                                <!-- Card visual -->
+                                <Grid>
+                                    <Border CornerRadius="16" Height="190"
+                                            Tag="{Binding Color}">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#6C63FF" Offset="0"/>
+                                                <GradientStop Color="#4ECDC4" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Grid Margin="28,24">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Top row -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="Nexes Pass" FontSize="14" FontWeight="Bold"
+                                                           Foreground="White" FontFamily="Segoe UI" Opacity="0.9"/>
+                                                <TextBlock Text="{Binding Status, Converter={StaticResource CardStatusTxt}}"
+                                                           FontSize="11" VerticalAlignment="Center"
+                                                           Margin="8,0,0,0" Opacity="0.7" Foreground="White"
+                                                           FontFamily="Segoe UI"/>
+                                            </StackPanel>
+
+                                            <!-- Chip + number -->
+                                            <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                                                <Border Width="44" Height="32" CornerRadius="6"
+                                                        Background="#F59E0B" HorizontalAlignment="Left"
+                                                        Margin="0,0,0,14" Opacity="0.9"/>
+                                                <TextBlock Text="{Binding MaskedNumber}" FontSize="17"
+                                                           Foreground="White" FontFamily="Courier New"
+                                                           FontWeight="Medium" LetterSpacing="2"/>
+                                            </StackPanel>
+
+                                            <!-- Bottom -->
+                                            <Grid Grid.Row="2">
+                                                <StackPanel HorizontalAlignment="Left">
+                                                    <TextBlock Text="HOLDER" FontSize="9" Foreground="White"
+                                                               Opacity="0.6" FontFamily="Segoe UI"/>
+                                                    <TextBlock Text="{Binding CardholderName}" FontSize="13"
+                                                               Foreground="White" FontWeight="Medium"
+                                                               FontFamily="Segoe UI"/>
+                                                </StackPanel>
+                                                <StackPanel HorizontalAlignment="Right">
+                                                    <TextBlock Text="EXPIRES" FontSize="9" Foreground="White"
+                                                               Opacity="0.6" FontFamily="Segoe UI"/>
+                                                    <TextBlock Text="{Binding Expiry}" FontSize="13"
+                                                               Foreground="White" FontWeight="Medium"
+                                                               FontFamily="Segoe UI"/>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Network}" FontSize="20"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                                                           Foreground="White" Opacity="0.4" FontWeight="Bold"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Empty state -->
+            <Border x:Name="EmptyCards" Background="{StaticResource CardBrush}" CornerRadius="16"
+                    Padding="40" Visibility="Collapsed">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="💳" FontSize="48" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Карт пока нет" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               FontFamily="Segoe UI" HorizontalAlignment="Center" Margin="0,12,0,4"/>
+                    <TextBlock Text="Выпустите первую карту"
+                               FontSize="13" Foreground="{StaticResource TextMutedBrush}"
+                               FontFamily="Segoe UI" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Right: Card detail -->
+        <Border Grid.Column="1" Margin="20,0,0,0" Background="{StaticResource CardBrush}"
+                CornerRadius="16" Padding="24">
+            <StackPanel>
+                <TextBlock Text="Управление картой" FontSize="16" FontWeight="Bold"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           FontFamily="Segoe UI" Margin="0,0,0,20"/>
+
+                <Border x:Name="NoCardSelected" Background="{StaticResource InputBrush}"
+                        CornerRadius="12" Padding="24">
+                    <TextBlock Text="Выберите карту" FontSize="14"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               FontFamily="Segoe UI" HorizontalAlignment="Center"/>
+                </Border>
+
+                <StackPanel x:Name="CardDetail" Visibility="Collapsed">
+                    <!-- Status -->
+                    <Border Background="{StaticResource InputBrush}" CornerRadius="10" Padding="14,12"
+                            Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse x:Name="StatusDot" Width="10" Height="10" VerticalAlignment="Center"
+                                     Fill="{StaticResource SuccessBrush}"/>
+                            <TextBlock x:Name="StatusText" Margin="10,0,0,0" FontSize="14"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       FontFamily="Segoe UI" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Freeze / Unfreeze -->
+                    <Button x:Name="FreezeBtn" Content="Заморозить карту"
+                            Style="{StaticResource GhostButton}"
+                            HorizontalAlignment="Stretch" Padding="16,12"
+                            Margin="0,0,0,12" Click="FreezeCard"
+                            Foreground="{StaticResource InfoColor}"/>
+
+                    <!-- Limits -->
+                    <TextBlock Text="ЛИМИТЫ" Style="{StaticResource LabelText}" Margin="0,8,0,8"/>
+                    <Border Background="{StaticResource InputBrush}" CornerRadius="10" Padding="14,12"
+                            Margin="0,0,0,8">
+                        <Grid>
+                            <TextBlock Text="Суточный лимит" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}" FontFamily="Segoe UI"/>
+                            <TextBlock x:Name="DailyLimitText" HorizontalAlignment="Right"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}" FontFamily="Segoe UI"/>
+                        </Grid>
+                    </Border>
+                    <Border Background="{StaticResource InputBrush}" CornerRadius="10" Padding="14,12"
+                            Margin="0,0,0,16">
+                        <Grid>
+                            <TextBlock Text="Месячный лимит" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}" FontFamily="Segoe UI"/>
+                            <TextBlock x:Name="MonthlyLimitText" HorizontalAlignment="Right"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}" FontFamily="Segoe UI"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Settings -->
+                    <TextBlock Text="НАСТРОЙКИ" Style="{StaticResource LabelText}" Margin="0,0,0,8"/>
+                    <Border Background="{StaticResource InputBrush}" CornerRadius="10" Padding="14,12"
+                            Margin="0,0,0,8">
+                        <Grid>
+                            <TextBlock Text="Бесконтактная оплата" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}" FontFamily="Segoe UI"/>
+                            <TextBlock Text="✓ Включена" HorizontalAlignment="Right"
+                                       FontSize="13" Foreground="{StaticResource SuccessBrush}"
+                                       FontFamily="Segoe UI"/>
+                        </Grid>
+                    </Border>
+                    <Border Background="{StaticResource InputBrush}" CornerRadius="10" Padding="14,12">
+                        <Grid>
+                            <TextBlock Text="Онлайн-платежи" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}" FontFamily="Segoe UI"/>
+                            <TextBlock Text="✓ Включены" HorizontalAlignment="Right"
+                                       FontSize="13" Foreground="{StaticResource SuccessBrush}"
+                                       FontFamily="Segoe UI"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Success/error messages -->
+                <TextBlock x:Name="MsgText" FontSize="13" FontFamily="Segoe UI"
+                           TextWrapping="Wrap" Margin="0,16,0,0" Visibility="Collapsed"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Issue card form -->
+        <Border x:Name="IssueForm" Grid.ColumnSpan="2"
+                Background="#CC000000" CornerRadius="16"
+                Visibility="Collapsed" Panel.ZIndex="100">
+            <Border Background="{StaticResource SurfaceBrush}" CornerRadius="16"
+                    Padding="32" Width="400" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="Выпустить карту" FontSize="20" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontFamily="Segoe UI" Margin="0,0,0,24"/>
+
+                    <TextBlock Text="СЧЁТ" Style="{StaticResource LabelText}"/>
+                    <ComboBox x:Name="CardAccountBox" Style="{StaticResource ModernComboBox}"
+                              Margin="0,0,0,16" DisplayMemberPath="Name"/>
+
+                    <TextBlock Text="ТИП КАРТЫ" Style="{StaticResource LabelText}"/>
+                    <ComboBox x:Name="CardTypeBox" Style="{StaticResource ModernComboBox}"
+                              Margin="0,0,0,16" SelectedIndex="0">
+                        <ComboBoxItem Content="Дебетовая"/>
+                        <ComboBoxItem Content="Кредитная"/>
+                        <ComboBoxItem Content="Виртуальная"/>
+                    </ComboBox>
+
+                    <TextBlock Text="ПЛАТЁЖНАЯ СИСТЕМА" Style="{StaticResource LabelText}"/>
+                    <ComboBox x:Name="CardNetworkBox" Style="{StaticResource ModernComboBox}"
+                              Margin="0,0,0,16" SelectedIndex="2">
+                        <ComboBoxItem Content="Visa"/>
+                        <ComboBoxItem Content="Mastercard"/>
+                        <ComboBoxItem Content="МИР"/>
+                    </ComboBox>
+
+                    <TextBlock Text="ЦВЕТ КАРТЫ" Style="{StaticResource LabelText}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                        <Border Width="32" Height="32" CornerRadius="8" Margin="0,0,8,0" Cursor="Hand"
+                                MouseLeftButtonDown="SelectColor" Tag="#6C63FF">
+                            <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#6C63FF" Offset="0"/>
+                                <GradientStop Color="#4ECDC4" Offset="1"/>
+                            </LinearGradientBrush></Border.Background>
+                        </Border>
+                        <Border Width="32" Height="32" CornerRadius="8" Margin="0,0,8,0" Cursor="Hand"
+                                MouseLeftButtonDown="SelectColor" Tag="#F59E0B">
+                            <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#F59E0B" Offset="0"/>
+                                <GradientStop Color="#D97706" Offset="1"/>
+                            </LinearGradientBrush></Border.Background>
+                        </Border>
+                        <Border Width="32" Height="32" CornerRadius="8" Margin="0,0,8,0" Cursor="Hand"
+                                MouseLeftButtonDown="SelectColor" Tag="#1A1A26">
+                            <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#1A1A26" Offset="0"/>
+                                <GradientStop Color="#0A0A0F" Offset="1"/>
+                            </LinearGradientBrush></Border.Background>
+                        </Border>
+                        <Border Width="32" Height="32" CornerRadius="8" Cursor="Hand"
+                                MouseLeftButtonDown="SelectColor" Tag="#16A34A">
+                            <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#16A34A" Offset="0"/>
+                                <GradientStop Color="#0F7633" Offset="1"/>
+                            </LinearGradientBrush></Border.Background>
+                        </Border>
+                    </StackPanel>
+
+                    <Border x:Name="IssueErrBorder" Background="#2D1515" CornerRadius="8"
+                            Padding="12,8" Margin="0,0,0,16" Visibility="Collapsed">
+                        <TextBlock x:Name="IssueErrText" Foreground="{StaticResource DangerBrush}"
+                                   FontFamily="Segoe UI" FontSize="13"/>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Выпустить" Style="{StaticResource PrimaryButton}"
+                                Padding="24,12" Click="ExecuteIssue"/>
+                        <Button Content="Отмена" Style="{StaticResource GhostButton}"
+                                Padding="20,12" Margin="8,0,0,0" Click="HideIssueForm"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</Page>
